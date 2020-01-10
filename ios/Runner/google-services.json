@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "254892505405",
+    "firebase_url": "https://chat-app-5768a.firebaseio.com",
+    "project_id": "chat-app-5768a",
+    "storage_bucket": "chat-app-5768a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254892505405:android:52e9a0d8a1fb2f5ba26d54",
+        "android_client_info": {
+          "package_name": "com.bmiflutter.my_chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254892505405-7apvckar9raodkq2dqf5mgq6eiv7ukp8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRhcmqqDS_YEjTgL7X9Bv04tuBUdykuVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254892505405-7apvckar9raodkq2dqf5mgq6eiv7ukp8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
