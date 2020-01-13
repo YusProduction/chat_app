@@ -30,5 +30,5 @@ class settingListModel {
   Icon icon;
   String account;
   String email;
-  settingListModel({this.icon,this.account, this.email});
+  settingListModel({this.icon, this.account, this.email});
 }
