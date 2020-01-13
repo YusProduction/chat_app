@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class ContactModel {
   String FirstName;
   String LastName;
@@ -25,7 +27,8 @@ class UsersLastMsg {
 }
 
 class settingListModel {
+  Icon icon;
   String account;
   String email;
-  settingListModel({this.account, this.email});
+  settingListModel({this.icon,this.account, this.email});
 }

@@ -359,7 +359,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   SizedBox(
-                    mhghjgjgj
+                    // mhghjgjgj
                     width: 5,
                   ),
                   SizedBox(
