@@ -4,6 +4,7 @@ import 'package:my_chat_app/NewUserChat.dart';
 import 'Models.dart';
 import 'ChatScreen.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'settings.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -15,11 +16,13 @@ class _MyHomePageState extends State<MyHomePage>
   TabController tabController;
   TextEditingController emailInputController = new TextEditingController();
   TextEditingController pwdInputController = new TextEditingController();
+  TextEditingController UNameController = new TextEditingController();
 
   int cT = 0;
 
   List<ContactModel> contactList = new List();
   List<UsersLastMsg> lastMsgList = new List();
+  List<settingListModel> settingListData = new List();
   bool loading = false;
 
   final databaseReference = FirebaseDatabase.instance.reference();
@@ -39,10 +42,10 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void checkPrefs() async {
-    String abc = await Common.getShared(ConstKeys.firstName);
-    if (abc != null)
+    String userName = await Common.getShared(ConstKeys.firstName);
+    if (userName != null)
       setState(() {
-        title = abc;
+        title = userName;
       });
   }
 
@@ -91,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      //  resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
 //        leading: Icon(Icons.add_a_photo),
@@ -189,36 +194,117 @@ class _MyHomePageState extends State<MyHomePage>
             ),
           ),
           Container(
+            // profile
             color: Colors.white,
-            padding: EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                      width: 380.0,
-                      height: 190.0,
-                      decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: new DecorationImage(
-                              fit: BoxFit.fill,
-                              image: new NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Tu8fS8Vo1xpIuQssKYs0CH7jJH5TW5y6t8xInzzKzc_fQP-L&s")))),
+                Container(
+//                  color: Colors.blue,
+                  alignment: Alignment.center,
+//                  padding: EdgeInsets.all(16),
+                  child: Stack(
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(120)),
+                        child: Image.network(
+                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Tu8fS8Vo1xpIuQssKYs0CH7jJH5TW5y6t8xInzzKzc_fQP-L&s",
+                          fit: BoxFit.cover,
+                          height: 230,
+                          width: 230,
+                        ),
+                      ),
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: CircleAvatar(
+                          radius: 30,
+                          child: IconButton(
+                            onPressed: () {},
+//                            iconSize: 25,
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                          backgroundColor: Color(0xff075e54),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 20,
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    "+92 340 1514691",
-                    style: TextStyle(fontSize: 25),
+                Container(
+//                  color: Colors.grey,
+//                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(8),
+//                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "${title}",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          UNameController.text = title;
+                          UNameController.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: UNameController.text.length);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Edit"),
+                                content: TextField(
+                                  controller: UNameController,
+                                  autofocus: true,
+//                                  onChanged: (txt) {
+//                                    UserName = txt;
+//                                    //print("Last Name $lastName");
+//                                  },
+                                ),
+                                actions: [
+                                  FlatButton(
+                                    child: Text("Yes"),
+                                    onPressed: () {
+                                      if (UNameController.text == title) {
+                                        Navigator.pop(context);
+                                        return;
+                                      }
+                                      if (UNameController.text.length > 0) {
+                                        print(UNameController.text);
+                                        setState(() {
+                                          title = UNameController.text;
+                                        });
+                                        // UserName = "";
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          settings()
+          settings(settingListData: settingListData),
         ],
       ),
       floatingActionButton: tabController.index == 0
@@ -240,31 +326,6 @@ class _MyHomePageState extends State<MyHomePage>
               child: Icon(Icons.share),
               onPressed: () {},
             ),
-    );
-  }
-
-  List<settingListModel> settingList = new List();
-
-  Widget settings() {
-    return Container(
-//            color: Colors.grey,
-      padding: EdgeInsets.all(6.0),
-      child: ListView.builder(
-          itemCount: 4,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              leading: CircleAvatar(
-                child: Icon(
-                  Icons.chat,
-                  color: Colors.white,
-                ),
-                backgroundColor: Color(0xff075e54),
-              ),
-              title: Text("Account $index"),
-              subtitle: Text("Your Email Adress"),
-              onTap: () {},
-            );
-          }),
     );
   }
 }

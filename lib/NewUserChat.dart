@@ -17,7 +17,6 @@ class _NewUserChatState extends State<NewUserChat> {
       FirebaseDatabase.instance.reference().child("users");
   final TextEditingController controller = new TextEditingController();
 
-  List<MessageModel> msgList = new List();
   List<ContactModel> contactList = new List();
 
   void getData() async {
@@ -36,7 +35,7 @@ class _NewUserChatState extends State<NewUserChat> {
           values.forEach((key, values) {
             //  print("values $values");
             setState(() {
-              contactList.add(new ContactModel(values["firstName"],
+              contactList.add(new ContactModel("$key", values["firstName"],
                   values["lastName"], values["email"], values["phNumber"]));
             });
           });
@@ -88,6 +87,8 @@ class _NewUserChatState extends State<NewUserChat> {
                               context,
                               new MaterialPageRoute(
                                   builder: (context) => new ChatScreen(
+                                        user_id:
+                                            contactList.elementAt(index).userId,
                                         id: null,
                                         title:
                                             "${contactList.elementAt(index).FirstName} ${contactList.elementAt(index).LastName}",

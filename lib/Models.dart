@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
 class ContactModel {
+  String userId;
   String FirstName;
   String LastName;
   String Email;
   String PhoneNumber;
-  ContactModel(this.FirstName, this.LastName, this.Email, this.PhoneNumber);
+  ContactModel(
+      this.userId, this.FirstName, this.LastName, this.Email, this.PhoneNumber);
 }
 
 class MessageModel {
   String msg;
   String sender;
+  String receiver;
   String time;
-  MessageModel(this.msg, this.sender, this.time);
+  MessageModel(this.msg, this.sender, this.receiver, this.time);
 }
 
 class UsersLastMsg {
@@ -27,8 +30,8 @@ class UsersLastMsg {
 }
 
 class settingListModel {
-  Icon icon;
+//  Icon icon;
   String account;
   String email;
-  settingListModel({this.icon, this.account, this.email});
+  settingListModel(this.account, this.email);
 }

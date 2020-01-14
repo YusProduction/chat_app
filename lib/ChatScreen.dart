@@ -10,9 +10,9 @@ class ChatScreen extends StatefulWidget {
   String id;
   String title;
   String image;
-  String roomKey;
+  String user_id;
 
-  ChatScreen({this.id, this.title, this.image, this.roomKey});
+  ChatScreen({this.id, this.title, this.image, this.user_id});
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -26,7 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String key = "";
   List<MessageModel> msgList = new List();
   String inputmsg;
-  String msgTime;
+//  double msgTime;
   bool owner = false;
 
   @override
@@ -44,11 +44,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String AuthUser = null;
   void checkUser() async {
-    String you = await Common.getShared(ConstKeys.firstName);
+    String you = await Common.getShared(ConstKeys.userId);
     if (you != null)
-      setState(() {
-        AuthUser = you;
-      });
+      // setState(() {
+      AuthUser = you;
+    //  });
   }
 
   void getData() {
@@ -60,19 +60,21 @@ class _ChatScreenState extends State<ChatScreen> {
         .onValue
         .listen((ondata) {
       // print(snapshot);
-      setState(() {
-        msgList = new List();
-        //  loading = false;
-      });
+
       if (ondata.snapshot != null) {
+        setState(() {
+          msgList = new List();
+          //  loading = false;
+        });
         Map<dynamic, dynamic> values = ondata.snapshot.value;
         if (values != null) {
           values.forEach((key, values) {
 //            print("values $values");
             setState(() {
-              msgList.add(MessageModel(
-                  values["message"], values["sender"], values["time"]));
+              msgList.add(MessageModel(values["message"], values["sender"],
+                  values["receiver"], values["time"]));
             });
+            sortList();
           });
         } else
           print("user not found12");
@@ -81,6 +83,8 @@ class _ChatScreenState extends State<ChatScreen> {
         print("user not found");
 //        Common.showToast("Data not found");
       }
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
     });
   }
 
@@ -185,6 +189,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
+//        margin: EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -194,9 +199,35 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemCount: msgList.length,
                     controller: _scrollController,
                     itemBuilder: (BuildContext msg, int index) {
-                      return AuthUser != null
+                      return AuthUser == msgList.elementAt(index).sender
                           ? InkWell(
-                              onTap: () {},
+                              onLongPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Delete"),
+                                      content:
+                                          Text("Are you sure want to delete?"),
+                                      actions: [
+                                        FlatButton(
+                                          child: Text("Yes"),
+                                          onPressed: () {
+                                            databaseReference
+                                                .child("messages")
+                                                .child("-LyTla9_jJdyQ5uVpRJL")
+                                                .remove();
+                                            setState(() {
+                                              msgList.removeAt(index).msg;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               child: Container(
                                 //padding: EdgeInsets.all(8.0),
                                 margin:
@@ -258,7 +289,33 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ))
                           : InkWell(
-                              onTap: () {},
+                              onLongPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Delete"),
+                                      content:
+                                          Text("Are you sure want to delete?"),
+                                      actions: [
+                                        FlatButton(
+                                          child: Text("Yes"),
+                                          onPressed: () {
+                                            databaseReference
+                                                .child("messages")
+                                                .child("-LyTla9_jJdyQ5uVpRJL")
+                                                .remove();
+                                            setState(() {
+                                              msgList.removeAt(index).msg;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               child: Container(
                                 //padding: EdgeInsets.all(8.0),
                                 margin:
@@ -376,7 +433,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         onPressed: () async {
 //                          var temp = await getMsg(key, inputmsg);
                           String Currenttime =
-                              DateFormat('hh:mm a').format(DateTime.now());
+                              DateFormat('hh:mm:ss a').format(DateTime.now());
 
                           String msgkey = databaseReference
                               .child("messages")
@@ -388,12 +445,17 @@ class _ChatScreenState extends State<ChatScreen> {
                             "lastMsgTime": Currenttime,
                             "lastSenderName": "${widget.title}",
                             "lastSenderImage": "${widget.image}",
+                            //  "receipentName": "",
+                            "receiverId": "${widget.user_id}",
+                            //  "senderName": "${AuthUser}",
+                            "senderId": "${AuthUser}",
+                            "members": "${AuthUser},${widget.user_id}"
                           };
                           var userMsg = {
                             "message": inputmsg,
                             "time": Currenttime,
-                            "sender": "${widget.title}",
-                            "receiver": "sdfasfasdf",
+                            "sender": "${AuthUser}",
+                            "receiver": "${widget.user_id}",
                             "roomKey": "$key"
                           };
                           databaseReference
@@ -406,20 +468,34 @@ class _ChatScreenState extends State<ChatScreen> {
                               .set(userMsg);
 
                           setState(() {
+//                            msgList.sort((a, b) {
+//                              return b.time.compareTo(a.time);
+//                            });
                             if (inputmsg == "") return;
 
-                            if (AuthUser != null)
-                              //       owner = !owner;
-                              msgList.add(new MessageModel(
-                                  inputmsg, "${AuthUser}", "$Currenttime"));
-                            else
-                              msgList.add(new MessageModel(
-                                  inputmsg, widget.id, "$Currenttime"));
+                            //  if (AuthUser != null)
+                            //       owner = !owner;
+                            msgList.add(new MessageModel(
+                                inputmsg,
+                                "${AuthUser}",
+                                "${widget.user_id}",
+                                "$Currenttime"));
+
+//                            else
+//                              msgList.add(new MessageModel(
+//                                  inputmsg, widget.id,, "$Currenttime"));
+
 //                            owner = !owner;
                             AuthUser == false;
+
+//                            msgList.sort((a, b) {
+//                              return a.compareTo(b);
+//                            });
+
                             controller.text = "";
                             inputmsg = "";
                           });
+                          sortList();
                           _scrollController.animateTo(
                               _scrollController.position.maxScrollExtent + 70,
                               duration: const Duration(milliseconds: 500),
@@ -435,5 +511,13 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  void sortList() {
+    setState(() {
+      msgList.sort((a, b) {
+        return a.time.compareTo(b.time);
+      });
+    });
   }
 }
