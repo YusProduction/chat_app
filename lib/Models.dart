@@ -35,3 +35,10 @@ class settingListModel {
   String email;
   settingListModel(this.icon, this.account, this.email);
 }
+
+class ProfileListModel {
+  IconData icon;
+  String name;
+  String description;
+  ProfileListModel(this.icon, this.name, this.description);
+}
