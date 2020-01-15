@@ -22,9 +22,10 @@ class _settingsState extends State<settings> {
   void getSettingData() {
     setState(() {
       settingListData = new List();
-      settingListData.add(new settingListModel("Account", "yusra@gmail.com"));
-      settingListData.add(
-          new settingListModel("Notifications", "Important notifications"));
+      settingListData.add(new settingListModel(
+          Icons.account_circle, "Account", "yusra@gmail.com"));
+      settingListData.add(new settingListModel(
+          Icons.notifications, "Notifications", "Important notifications"));
     });
   }
 
@@ -63,7 +64,7 @@ class _settingsState extends State<settings> {
                   return ListTile(
                     leading: CircleAvatar(
                       child: Icon(
-                        Icons.notification_important,
+                        settingListData.elementAt(index).icon,
                         color: Color(0xff075e54),
                       ),
 //                      backgroundColor: Color(0xff075e54),
