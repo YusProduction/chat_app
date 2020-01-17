@@ -169,12 +169,11 @@ class _ChatScreenState extends State<ChatScreen> {
               CircleAvatar(
                   radius: 22.0,
                   child: widget.image != ""
-                      ? ClipOval(
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
                           child: Image.network(
                             "${widget.image}",
                             fit: BoxFit.cover,
-                            height: 90,
-                            width: 90,
                           ),
                         )
                       : Text("${widget.title[0].toUpperCase()}")),
@@ -336,24 +335,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                       margin:
                                           const EdgeInsets.only(right: 16.0),
                                       child: CircleAvatar(
-                                        backgroundColor: Colors.grey,
-                                        radius: 23,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(25)),
-                                          child: Image.network(
-                                            "${widget.image}",
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-
-//                                              new Text(
-//                                            "R",
-////                                            "${msgList.elementAt(index).sender}",
-//                                            style:
-//                                                TextStyle(color: Colors.black),
-//                                          )
-                                      ),
+                                          backgroundColor: Colors.grey,
+                                          radius: 23,
+                                          child: widget.image != ""
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(25)),
+                                                  child: Image.network(
+                                                    "${widget.image}",
+                                                    fit: BoxFit.cover,
+                                                  ))
+                                              : Text(
+                                                  "${widget.title[0].toUpperCase()}",
+//                                            "${msgList.elementAt(index).sender}",
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                )),
                                     ),
                                     new Expanded(
                                       child: new Align(
@@ -408,13 +406,15 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              height: 50,
-              //padding: EdgeInsets.all(10.0),
-              //color: Colors.purple,
+              height: 55,
+//              padding: EdgeInsets.all(5.0),
+//              color: Colors.purple,
               child: Row(
                 children: <Widget>[
                   Expanded(
                     child: TextField(
+                      maxLines: 4,
+//                      autofocus: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.insert_emoticon,
@@ -436,13 +436,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   SizedBox(
-                    // mhghjgjgj
                     width: 5,
                   ),
                   SizedBox(
                     height: 50,
                     width: 50,
                     child: CircleAvatar(
+                      radius: 30,
                       backgroundColor: Color(0xff075e54),
                       child: IconButton(
                         color: Color(0xff3B6BB3),

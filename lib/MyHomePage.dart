@@ -192,14 +192,15 @@ class _MyHomePageState extends State<MyHomePage>
 //                        tag: lastMsgList.elementAt(index).lastSenderImage,
 //                        child:
                           CircleAvatar(
+                        radius: 23,
                         child: lastMsgList.elementAt(index).lastSenderImage !=
                                 ""
-                            ? ClipOval(
+                            ? ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25)),
                                 child: Image.network(
                                   "${lastMsgList.elementAt(index).lastSenderImage}",
                                   fit: BoxFit.cover,
-                                  height: 90,
-                                  width: 90,
                                 ),
                               )
                             : Text(

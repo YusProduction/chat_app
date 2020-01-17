@@ -20,17 +20,17 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   initState() {
     super.initState();
-//    checkPrefs();
+    checkPrefs();
   }
 
-//  void checkPrefs() async {
-//    String xyz = await Common.getShared(ConstKeys.loginStatus);
-//    print("xyz $xyz");
-//    if (xyz != null && xyz == "true") {
-//      Navigator.pushReplacement(context,
-//          new MaterialPageRoute(builder: (context) => new MyHomePage()));
-//    }
-//  }
+  void checkPrefs() async {
+    String xyz = await Common.getShared(ConstKeys.loginStatus);
+    print("xyz $xyz");
+    if (xyz != null && xyz == "true") {
+      Navigator.pushReplacement(context,
+          new MaterialPageRoute(builder: (context) => new MyHomePage()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
