@@ -52,18 +52,17 @@ class _MyHomePageState extends State<MyHomePage>
           }
         });
       });
-//    checkPrefs();
+    checkUserProfilePic();
     getMsgData();
   }
 
   String title = null;
-//  void checkPrefs() async {
-//    String userName = await Common.getShared(ConstKeys.firstName);
-//    if (userName != null)
-//      setState(() {
-//        title = userName;
-//      });
-//  }
+  String profile_url = "";
+  void checkUserProfilePic() async {
+    String url = await Common.getShared(ConstKeys.profile_img);
+    if (url != null) profile_url = url;
+    print(profile_url);
+  }
 
   @override
   void dispose() {
@@ -134,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage>
                 ),
                 PopupMenuItem(
                   value: 4,
-                  child: Text("Setting"),
+                  child: Text("Logout"),
                 ),
               ];
             })
@@ -159,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage>
           children: <Widget>[
             Container(
               child: ListView.separated(
+//                reverse: true,
                 separatorBuilder: (context, position) {
                   return Container(
                     width: double.infinity,
@@ -187,16 +187,25 @@ class _MyHomePageState extends State<MyHomePage>
                                   )));
                     },
                     child: ListTile(
-                      leading: CircleAvatar(
-                        child: ClipOval(
-                          child: Image.network(
-                            "${lastMsgList.elementAt(index).lastSenderImage}",
-                            fit: BoxFit.cover,
-                            height: 90,
-                            width: 90,
-                          ),
-                        ),
+                      leading:
+//                    Hero(
+//                        tag: lastMsgList.elementAt(index).lastSenderImage,
+//                        child:
+                          CircleAvatar(
+                        child: lastMsgList.elementAt(index).lastSenderImage !=
+                                ""
+                            ? ClipOval(
+                                child: Image.network(
+                                  "${lastMsgList.elementAt(index).lastSenderImage}",
+                                  fit: BoxFit.cover,
+                                  height: 90,
+                                  width: 90,
+                                ),
+                              )
+                            : Text(
+                                "${lastMsgList.elementAt(index).lastSenderName[0].toUpperCase()}"),
                       ),
+//                      ),
                       title: Text(
                           "${lastMsgList.elementAt(index).lastSenderName}"),
 //                    subtitle: Text("${chatList.elementAt(index).msg}"),

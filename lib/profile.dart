@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_chat_app/Common.dart';
-import 'package:image_crop/image_crop.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'Models.dart';
 
@@ -17,8 +19,6 @@ class _profilePageState extends State<profilePage> {
   TextEditingController UNameController = new TextEditingController();
   final databaseReference = FirebaseDatabase.instance.reference();
   File _image;
-  final cropKey = GlobalKey<CropState>();
-
   List<ProfileListModel> profileListData;
 
   @override
@@ -39,6 +39,7 @@ class _profilePageState extends State<profilePage> {
     });
   }
 
+  String _uploadedFileURL;
   String title = null;
   void checkPrefs() async {
     String userName = await Common.getShared(ConstKeys.firstName);
@@ -46,7 +47,15 @@ class _profilePageState extends State<profilePage> {
       setState(() {
         title = userName;
       });
+
+    String url = await Common.getShared(ConstKeys.profile_img);
+    if (url != null)
+      setState(() {
+        profile_url = url;
+      });
   }
+
+  String profile_url = "";
 
   @override
   Widget build(BuildContext context) {
@@ -57,31 +66,44 @@ class _profilePageState extends State<profilePage> {
       child: ListView(
         children: <Widget>[
           Container(
-//                  color: Colors.blue,
+            height: 250,
+            width: 250,
+            // color: Colors.blue,
             alignment: Alignment.center,
 //                  padding: EdgeInsets.all(16),
             child: Stack(
               children: <Widget>[
                 ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(120)),
-                  child: _image == null
-                      ? Image.network(
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Tu8fS8Vo1xpIuQssKYs0CH7jJH5TW5y6t8xInzzKzc_fQP-L&s",
-                          fit: BoxFit.cover,
-                          height: 230,
-                          width: 230,
-                          loadingBuilder: (context, child, inprogress) {
-                            return inprogress == null
-                                ? child
-                                : CircularProgressIndicator();
-                          },
+                  borderRadius: BorderRadius.all(Radius.circular(150)),
+                  child: profile_url != ""
+                      ? Container(
+                          height: 250,
+                          width: 250,
+                          // padmding: EdgeInsets.all(16.0),
+                          child: Image.network(
+                            "$profile_url",
+                            fit: BoxFit.cover,
+                            height: 230,
+                            width: 230,
+                            loadingBuilder: (context, child, inprogress) {
+                              return inprogress == null
+                                  ? child
+                                  : CircularProgressIndicator();
+                            },
+                          ),
                         )
-                      : Image.file(
-                          _image,
-                          key: cropKey,
-                          fit: BoxFit.cover,
-                          height: 230,
-                          width: 230,
+                      : Container(
+                          height: 250,
+                          width: 250,
+                          //  padding: EdgeInsets.all(16.0),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.pink,
+                            child: Icon(
+                              Icons.person,
+                              size: 100,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                 ),
                 Positioned(
@@ -96,13 +118,46 @@ class _profilePageState extends State<profilePage> {
                             maxWidth: 230.0,
                             maxHeight: 230.0);
                         if (image != null) {
+                          File croppedFile = await ImageCropper.cropImage(
+                              sourcePath: image.path,
+                              aspectRatioPresets: [
+                                CropAspectRatioPreset.square
+                              ],
+                              androidUiSettings: AndroidUiSettings(
+//                                  toolbarTitle: 'Cropper',
+//                                  toolbarColor: Colors.deepOrange,
+//                                  toolbarWidgetColor: Colors.white,
+                                  initAspectRatio:
+                                      CropAspectRatioPreset.original,
+                                  lockAspectRatio: true),
+                              iosUiSettings: IOSUiSettings(
+                                minimumAspectRatio: 1.0,
+                              ));
+                          if (croppedFile != null)
+                            setState(() {
+                              _image = croppedFile;
+                            });
+                          StorageReference storageReference =
+                              FirebaseStorage.instance.ref().child(
+                                  'profileimages/${Path.basename(_image.path)}}');
+                          StorageUploadTask uploadTask =
+                              storageReference.putFile(_image);
+                          await uploadTask.onComplete;
+                          print('File Uploaded');
+
+                          String url = await storageReference.getDownloadURL();
                           setState(() {
-                            _image = image;
-//                            var UImg = {
-//                              "UserImage": _image,
-//                            };
-//                            databaseReference.child("UserImg").push().set(UImg);
+                            _uploadedFileURL = url;
+                            profile_url = url;
                           });
+                          String id = await Common.getShared(ConstKeys.userId);
+                          //print("asdffadsfa: $profile_url");
+                          databaseReference
+                              .child("users")
+                              .child("${id}")
+                              .child("profileurl")
+                              .set(profile_url);
+                          Common.setPrefs(ConstKeys.profile_img, profile_url);
                         }
                       },
 //                            iconSize: 25,
@@ -161,7 +216,7 @@ class _profilePageState extends State<profilePage> {
                         actions: [
                           FlatButton(
                             child: Text("Save"),
-                            onPressed: () {
+                            onPressed: () async {
                               if (UNameController.text == title) {
                                 Navigator.pop(context);
                                 return;
@@ -171,14 +226,16 @@ class _profilePageState extends State<profilePage> {
                                 setState(() {
                                   title = UNameController.text;
                                 });
-                                var UName = {
-                                  "UserName": UNameController.text,
-//                                    "UserImage": _image
-                                };
+
+                                String id =
+                                    await Common.getShared(ConstKeys.userId);
                                 databaseReference
-                                    .child("UserName")
-                                    .push()
-                                    .set(UName);
+                                    .child("users")
+                                    .child("${id}")
+                                    .child("firstName")
+                                    .set(UNameController.text);
+                                Common.setPrefs(
+                                    ConstKeys.firstName, UNameController.text);
                                 Navigator.pop(context);
                               }
                             },

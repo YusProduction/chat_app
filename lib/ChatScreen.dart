@@ -43,6 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String AuthUser = null;
+
   void checkUser() async {
     String you = await Common.getShared(ConstKeys.userId);
     if (you != null)
@@ -161,16 +162,23 @@ class _ChatScreenState extends State<ChatScreen> {
               SizedBox(
                 width: 8,
               ),
+//              Hero(
+//                tag: "${widget.image}",
+//                transitionOnUserGestures: true,
+//                child:
               CircleAvatar(
                   radius: 22.0,
-                  child: ClipOval(
-                    child: Image.network(
-                      "${widget.image}",
-                      fit: BoxFit.cover,
-                      height: 90,
-                      width: 90,
-                    ),
-                  )),
+                  child: widget.image != ""
+                      ? ClipOval(
+                          child: Image.network(
+                            "${widget.image}",
+                            fit: BoxFit.cover,
+                            height: 90,
+                            width: 90,
+                          ),
+                        )
+                      : Text("${widget.title[0].toUpperCase()}")),
+//              ),
               SizedBox(
                 width: 8,
               ),
@@ -250,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> {
 //                                            margin: EdgeInsets.only(
 //                                                right: 0, top: 8),
                                             decoration: BoxDecoration(
-                                                color: Color(0xff3B6BB3),
+                                                color: Color(0xff075e54),
                                                 borderRadius: BorderRadius.only(
                                                   topLeft:
                                                       Radius.circular(15.0),
@@ -277,7 +285,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     new Container(
                                       margin: const EdgeInsets.only(left: 16.0),
                                       child: new CircleAvatar(
-                                          backgroundColor: Color(0xff3B6BB3),
+                                          backgroundColor: Color(0xff075e54),
+                                          radius: 23,
                                           child: new Text(
                                             "You",
                                             style: TextStyle(
@@ -326,14 +335,25 @@ class _ChatScreenState extends State<ChatScreen> {
                                     new Container(
                                       margin:
                                           const EdgeInsets.only(right: 16.0),
-                                      child: new CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          child: new Text(
-                                            "R",
-//                                            "${msgList.elementAt(index).sender}",
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          )),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.grey,
+                                        radius: 23,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(25)),
+                                          child: Image.network(
+                                            "${widget.image}",
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+
+//                                              new Text(
+//                                            "R",
+////                                            "${msgList.elementAt(index).sender}",
+//                                            style:
+//                                                TextStyle(color: Colors.black),
+//                                          )
+                                      ),
                                     ),
                                     new Expanded(
                                       child: new Align(

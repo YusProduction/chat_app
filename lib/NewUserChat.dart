@@ -23,6 +23,7 @@ class _NewUserChatState extends State<NewUserChat> {
     setState(() {
       loading = true;
     });
+    String key1 = await Common.getShared(ConstKeys.userId);
     var ref = FirebaseDatabase.instance.reference();
     ref.child("users").once().then((DataSnapshot snapshot) {
       // print(snapshot);
@@ -34,10 +35,16 @@ class _NewUserChatState extends State<NewUserChat> {
         if (values != null) {
           values.forEach((key, values) {
             //  print("values $values");
-            setState(() {
-              contactList.add(new ContactModel("$key", values["firstName"],
-                  values["lastName"], values["email"], values["phNumber"]));
-            });
+            if (key != key1)
+              setState(() {
+                contactList.add(new ContactModel(
+                    "$key",
+                    values["firstName"],
+                    values["lastName"],
+                    values["email"],
+                    values["phNumber"],
+                    values["profileurl"]));
+              });
           });
         } else
           Common.showToast("No user found");
@@ -48,10 +55,18 @@ class _NewUserChatState extends State<NewUserChat> {
     });
   }
 
+//  String profile_url = "";
+//  void checkUserProfilePic() async {
+//    String url = await Common.getShared(ConstKeys.profile_img);
+//    if (url != null) profile_url = url;
+//    print(profile_url);
+//  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+//    checkUserProfilePic();
     getData();
   }
 
@@ -61,7 +76,7 @@ class _NewUserChatState extends State<NewUserChat> {
       appBar: AppBar(title: Text("Select New User")),
       body: Container(
         alignment: Alignment.center,
-        //padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(4.0),
         child: !loading
             ? contactList.length > 0
                 ? ListView.builder(
@@ -71,11 +86,18 @@ class _NewUserChatState extends State<NewUserChat> {
                       return InkWell(
                         child: ListTile(
                           leading: CircleAvatar(
-//                        backgroundColor: Color(
-//                                (Random().nextDouble() * 0xFFFFFF).toInt() << 0)
-//                            .withOpacity(1.0),
-                            child: Text(
-                                "${contactList.elementAt(index).FirstName[0].toUpperCase()}"),
+                            radius: 25,
+                            child: contactList.elementAt(index).profilePic != ""
+                                ? ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                    child: Image.network(
+                                      "${contactList.elementAt(index).profilePic}",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Text(
+                                    "${contactList.elementAt(index).FirstName[0].toUpperCase()}"),
                           ),
                           title: Text(
                               "${contactList.elementAt(index).FirstName} ${contactList.elementAt(index).LastName}"),
@@ -92,7 +114,8 @@ class _NewUserChatState extends State<NewUserChat> {
                                         id: null,
                                         title:
                                             "${contactList.elementAt(index).FirstName} ${contactList.elementAt(index).LastName}",
-                                        image: "User$index",
+                                        image:
+                                            "${contactList.elementAt(index).profilePic}",
                                       )));
                         },
                       );

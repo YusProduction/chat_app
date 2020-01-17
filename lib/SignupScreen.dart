@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 //import 'package:email_validator/email_validator.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
@@ -36,7 +37,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         // resizeToAvoidBottomInset: true,
-        //   resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomPadding: true,
         appBar: AppBar(
           title: Center(
             child: Text("Create Account"),
@@ -48,61 +49,83 @@ class _SignupScreenState extends State<SignupScreen> {
             key: _formKey,
             child: Container(
               padding: EdgeInsets.all(20.0),
-              child: Column(
+              alignment: Alignment.center,
+              child: ListView(
                 children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                            child: TextFormField(
-                          onChanged: (txt) {
-                            firstName = txt;
-                            //print("First name $firstName");
-                          },
-                          decoration: InputDecoration(
-                              hintText: "First Name",
-                              prefixIcon: Icon(Icons.supervised_user_circle),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(32.0))),
-                          keyboardType: TextInputType.text,
-                          controller: firstNameInputController,
-                          validator: (value) {
-                            if (value.length < 3) {
-                              return 'Name not long enough';
-                            }
-                          },
-                        )),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Expanded(
-                            child: TextFormField(
-                          onChanged: (txt) {
-                            lastName = txt;
-                            //print("Last Name $lastName");
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Last Name",
-                              prefixIcon: Icon(Icons.supervised_user_circle),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(32.0))),
-                          keyboardType: TextInputType.text,
-                          controller: lastNameInputController,
-                          //onSaved: (value) => _name = value,
-                          validator: (value) {
-                            if (value.length < 2) {
-                              return "Name not long enough";
-                            }
-                          },
-                        )),
-                      ],
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Create a new User Account to Login My Chat App",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  Expanded(
-                      child: TextFormField(
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                          child: TextFormField(
+                        onChanged: (txt) {
+                          firstName = txt;
+                          //print("First name $firstName");
+                        },
+                        maxLength: 10,
+                        inputFormatters: [
+                          new BlacklistingTextInputFormatter(new RegExp(
+                              r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                        ],
+                        decoration: InputDecoration(
+                            hintText: "First Name",
+                            prefixIcon: Icon(Icons.supervised_user_circle),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32.0))),
+                        keyboardType: TextInputType.text,
+                        controller: firstNameInputController,
+                        validator: (value) {
+                          if (value.length < 3) {
+                            return 'Name not long enough';
+                          }
+                        },
+                      )),
+                      SizedBox(
+                        width: 8.0,
+                      ),
+                      Expanded(
+                          child: TextFormField(
+                        onChanged: (txt) {
+                          lastName = txt;
+                          //print("Last Name $lastName");
+                        },
+                        maxLength: 10,
+                        inputFormatters: [
+                          new BlacklistingTextInputFormatter(new RegExp(
+                              r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                        ],
+                        decoration: InputDecoration(
+                            hintText: "Last Name",
+                            prefixIcon: Icon(Icons.supervised_user_circle),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32.0))),
+                        keyboardType: TextInputType.text,
+                        controller: lastNameInputController,
+                        //onSaved: (value) => _name = value,
+                        validator: (value) {
+                          if (value.length < 2) {
+                            return "Name not long enough";
+                          }
+                        },
+                      )),
+                    ],
+                  ),
+//                  SizedBox(
+//                    height: 10,
+//                  ),
+                  TextFormField(
                     onChanged: (txt) {
                       phoneNumber = txt;
                     },
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    maxLength: 12,
                     decoration: InputDecoration(
                         hintText: "Phone No.",
                         prefixIcon: Icon(Icons.phone),
@@ -116,9 +139,11 @@ class _SignupScreenState extends State<SignupScreen> {
                         return "Enter phone number";
                       }
                     },
-                  )),
-                  Expanded(
-                      child: TextFormField(
+                  ),
+//                  SizedBox(
+//                    height: 10,
+//                  ),
+                  TextFormField(
                     onChanged: (txt) {
                       email = txt;
                     },
@@ -138,9 +163,11 @@ class _SignupScreenState extends State<SignupScreen> {
 //                        return 'Please enter a valid email';
 //                      }
                     },
-                  )),
-                  Expanded(
-                      child: TextFormField(
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
                     //key: passKey,
                     onChanged: (txt) {
                       passwrod = txt;
@@ -158,9 +185,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           : null;
                       return result;
                     },
-                  )),
-                  Expanded(
-                      child: TextFormField(
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
                     onChanged: (txt) {
                       confirmPassword = txt;
                     },
@@ -178,28 +207,33 @@ class _SignupScreenState extends State<SignupScreen> {
                         return null;
                       }
                     },
-                  )),
-                  Expanded(
-                    child: SizedBox(
-                        width: double.infinity,
-                        //height: double.infinity,
-                        child: RaisedButton(
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              _doSomething();
-                            }
-                          },
-                          color: Color(0xff00C0B5),
-                          child: Text(
-                            "SignUp",
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(20.0),
-                              side: BorderSide(color: Colors.grey)),
-                        )),
-                  )
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.only(right: 70, left: 70, top: 8, bottom: 8),
+                    height: 80,
+                    width: 150,
+//                    color: Colors.brown,
+                    child: RaisedButton(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          _doSomething();
+                        }
+                      },
+                      color: Color(0xff075e54),
+                      child: Text(
+                        "SignUp",
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(32.0),
+                          side: BorderSide(color: Colors.grey)),
+                    ),
+                  ),
                 ],
               ),
             )));
@@ -212,7 +246,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return (!regex.hasMatch(value)) ? false : true;
   }
 
-  void _doSomething() {
+  void _doSomething() async {
     setState(() {
       print('First Name: $firstName');
       print("Last Name: $lastName");
@@ -223,15 +257,17 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     //HashMap<String, Object> sdf = new HashMap();
-
+    String lik = databaseReference.child("users").push().key;
     var data = {
       "firstName": firstName,
       "lastName": lastName,
       "phNumber": phoneNumber,
       "email": email,
       "password": passwrod,
+      "key": lik,
+      "profileurl": "",
     };
-    databaseReference.child("users").push().set(data);
+    databaseReference.child("users").child(lik).set(data);
     Navigator.pop(context);
   }
 }

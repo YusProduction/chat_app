@@ -6,8 +6,9 @@ class ContactModel {
   String LastName;
   String Email;
   String PhoneNumber;
-  ContactModel(
-      this.userId, this.FirstName, this.LastName, this.Email, this.PhoneNumber);
+  String profilePic;
+  ContactModel(this.userId, this.FirstName, this.LastName, this.Email,
+      this.PhoneNumber, this.profilePic);
 }
 
 class MessageModel {

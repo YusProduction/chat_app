@@ -27,6 +27,7 @@ class Common {
 class ConstKeys {
   static String email = "email";
   static String firstName = "fname";
+  static String profile_img = "profile_img";
   static String lastName = "lname";
   static String password = "password";
   static String userId = "userid";

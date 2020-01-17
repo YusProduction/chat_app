@@ -1,4 +1,3 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,17 +20,17 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   initState() {
     super.initState();
-    checkPrefs();
+//    checkPrefs();
   }
 
-  void checkPrefs() async {
-    String xyz = await Common.getShared(ConstKeys.loginStatus);
-    print("xyz $xyz");
-    if (xyz != null && xyz == "true") {
-      Navigator.pushReplacement(context,
-          new MaterialPageRoute(builder: (context) => new MyHomePage()));
-    }
-  }
+//  void checkPrefs() async {
+//    String xyz = await Common.getShared(ConstKeys.loginStatus);
+//    print("xyz $xyz");
+//    if (xyz != null && xyz == "true") {
+//      Navigator.pushReplacement(context,
+//          new MaterialPageRoute(builder: (context) => new MyHomePage()));
+//    }
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,18 +54,22 @@ class _SigninScreenState extends State<SigninScreen> {
                   "https://i.ytimg.com/vi/9XMt2hChbRo/maxresdefault.jpg"),
             ),
             SizedBox(
-//            height: 20.0,
+              height: 10.0,
 //            width: 20.0,
-                ),
+            ),
             Expanded(
                 flex: 2,
                 child: Form(
                     key: _loginFormKey,
                     child: Container(
                       padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                      color: Colors.brown,
+                      child: ListView(
+//                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
+                          SizedBox(
+                            height: 8,
+                          ),
                           TextFormField(
                             decoration: InputDecoration(
                                 labelText: "Email",
@@ -80,6 +83,9 @@ class _SigninScreenState extends State<SigninScreen> {
                               if (!validateEmail(value)) return "Invalid email";
                             },
                           ),
+                          SizedBox(
+                            height: 14,
+                          ),
                           TextFormField(
                             decoration: InputDecoration(
                                 labelText: "Password",
@@ -89,6 +95,9 @@ class _SigninScreenState extends State<SigninScreen> {
                             obscureText: true,
                             controller: pwdInputController,
                             validator: pwdValidator,
+                          ),
+                          SizedBox(
+                            height: 14,
                           ),
                           Row(
                             children: <Widget>[
@@ -108,7 +117,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                 ),
                               ),
                               SizedBox(
-                                width: 20,
+                                width: 16,
                               ),
                               Expanded(
                                 child: RaisedButton(
@@ -154,7 +163,9 @@ class _SigninScreenState extends State<SigninScreen> {
                                                 Common.setPrefs(
                                                     ConstKeys.loginStatus,
                                                     "true");
-
+                                                Common.setPrefs(
+                                                    ConstKeys.profile_img,
+                                                    values["profileurl"]);
                                                 Navigator.pushReplacement(
                                                     context,
                                                     new MaterialPageRoute(
@@ -172,9 +183,9 @@ class _SigninScreenState extends State<SigninScreen> {
                                             });
                                           else
                                             print("Invalid user");
-                                          //Common.showToast("invalid User");
+                                          Common.showToast("User not Found");
                                         } else {
-                                          print("user not found");
+                                          print("invalid");
                                           Common.showToast("invalid");
                                         }
                                       });
@@ -195,6 +206,9 @@ class _SigninScreenState extends State<SigninScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                          SizedBox(
+                            height: 14,
                           ),
                           Row(children: <Widget>[
                             Expanded(
